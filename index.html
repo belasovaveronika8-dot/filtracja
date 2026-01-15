@@ -20,6 +20,7 @@
       --shadow: 0 12px 30px rgba(2,132,199,.12);
       --r:18px;
     }
+
     *{ box-sizing:border-box; }
     html,body{ height:100%; }
     body{
@@ -31,12 +32,24 @@
         radial-gradient(900px 600px at 85% 85%, rgba(14,165,164,.18), transparent 55%),
         linear-gradient(180deg, var(--bg), var(--bg2));
       display:flex;
+      overflow-x:hidden; /* FIX: запрет горизонтального скролла */
     }
+
+    /* FIX: безопасный контейнер под iOS/Telegram */
     .app{
       margin:auto;
-      width:min(520px, 94vw);
+      width:100%;
+      max-width:520px;
       padding:16px 0 calc(16px + env(safe-area-inset-bottom)) 0;
+      overflow-x:hidden;
     }
+
+    /* FIX: перенос текста, чтобы не разъезжалось */
+    h1, p, div, span{
+      overflow-wrap:anywhere;
+      word-break:break-word;
+    }
+
     .header{
       padding:0 16px;
       margin-bottom:12px;
@@ -61,6 +74,7 @@
       padding:14px;
       margin:0 16px 12px 16px;
       backdrop-filter: blur(6px);
+      overflow:hidden; /* FIX: ничего не вылезает наружу */
     }
 
     .row{
@@ -69,7 +83,9 @@
       flex-wrap:wrap;
       align-items:center;
       justify-content:space-between;
+      min-width:0; /* FIX */
     }
+
     .pill{
       background:rgba(238,246,255,.9);
       border:1px solid var(--line);
@@ -78,6 +94,8 @@
       font-size:13px;
       color:var(--text);
       user-select:none;
+      max-width:100%;
+      min-width:0; /* FIX */
     }
     .pill b{ font-variant-numeric:tabular-nums; }
 
@@ -94,12 +112,14 @@
       line-height:1.35;
     }
 
-    /* Warstwy do wyboru */
+    /* FIX: сетка безопасная, сжатие разрешено */
     .choices{
       display:grid;
       grid-template-columns:1fr 1fr;
       gap:10px;
+      min-width:0;
     }
+
     .chip{
       border:1px solid rgba(2,132,199,.22);
       background:rgba(238,246,255,.72);
@@ -109,16 +129,21 @@
       text-align:left;
       user-select:none;
       -webkit-tap-highlight-color: transparent;
+
       display:flex;
       gap:10px;
       align-items:center;
       justify-content:space-between;
+
+      min-width:0;      /* FIX */
+      max-width:100%;   /* FIX */
     }
     .chip:active{ transform: translateY(1px); }
     .chip .left{
       display:flex;
       gap:10px;
       align-items:center;
+      min-width:0; /* FIX */
     }
     .chip .ico{
       width:38px; height:38px;
@@ -129,10 +154,12 @@
       font-size:18px;
       background:#fff;
       border:1px solid rgba(2,132,199,.18);
+      flex:0 0 auto;
     }
     .chip .name{
       font-weight:800;
       font-size:14px;
+      line-height:1.15;
     }
     .chip .desc{
       margin-top:2px;
@@ -148,32 +175,36 @@
       border-radius:999px;
       padding:4px 8px;
       white-space:nowrap;
+      flex:0 0 auto;
     }
     .chip.disabled{
       opacity:.45;
       cursor:not-allowed;
     }
 
-    /* Wybrana kolejność */
     .stack{
       margin-top:10px;
       border:1px solid rgba(2,132,199,.18);
       background:rgba(255,255,255,.75);
       border-radius:16px;
       padding:12px;
+      overflow:hidden; /* FIX */
     }
     .stackTop{
       display:flex;
       justify-content:space-between;
-      align-items:center;
+      align-items:flex-start;
       gap:10px;
       margin-bottom:10px;
+      flex-wrap:wrap;   /* FIX: перенос */
+      min-width:0;
     }
     .stackTop .small{
       font-size:12px;
       color:var(--muted);
       line-height:1.25;
     }
+
     .slots{
       display:flex;
       flex-direction:column;
@@ -189,7 +220,10 @@
       align-items:center;
       min-height:44px;
       font-size:14px;
+      gap:10px;
+      min-width:0;
     }
+    .slot span{ min-width:0; }
     .slot b{ font-weight:900; }
     .slot .remove{
       border:none;
@@ -200,25 +234,27 @@
       cursor:pointer;
       padding:6px 8px;
       border-radius:10px;
+      flex:0 0 auto;
     }
     .slot .remove:active{ background:rgba(225,29,72,.08); }
 
-    /* Klarowność + symulacja */
     .meter{
       margin-top:12px;
       border-radius:16px;
       border:1px solid rgba(2,132,199,.18);
       background:rgba(255,255,255,.78);
       padding:12px;
+      overflow:hidden; /* FIX */
     }
 
-    /* mini-wizualizacja wody */
+    /* Symulacja wody */
     .waterBox{
       border:1px solid rgba(2,132,199,.18);
       border-radius:16px;
       background:rgba(238,246,255,.45);
       padding:12px;
       margin-bottom:10px;
+      overflow:hidden;
     }
     .waterTop{
       display:flex;
@@ -226,6 +262,8 @@
       align-items:flex-start;
       gap:10px;
       margin-bottom:10px;
+      flex-wrap:wrap; /* FIX */
+      min-width:0;
     }
     .waterTop .title{
       font-weight:900;
@@ -247,6 +285,7 @@
       border:1px solid rgba(2,132,199,.20);
       background: rgba(255,255,255,.7);
       overflow:hidden;
+      max-width:100%;
     }
     .beaker::before{
       content:"";
@@ -256,8 +295,6 @@
       border:1px dashed rgba(2,132,199,.20);
       pointer-events:none;
     }
-
-    /* Слой воды: основа + “муть” сверху, которая исчезает */
     .water{
       position:absolute;
       left:0; right:0; bottom:0;
@@ -274,8 +311,6 @@
       opacity: 1;
       transition: opacity 1.2s ease;
     }
-
-    /* “Wlewanie” — быстрый эффект струи */
     .pour{
       position:absolute;
       top:-30px; left:50%;
@@ -314,6 +349,8 @@
       align-items:flex-end;
       gap:10px;
       margin-top:8px;
+      flex-wrap:wrap; /* FIX */
+      min-width:0;
     }
     .meterRow .big{
       font-weight:1000;
@@ -326,7 +363,6 @@
       text-align:right;
     }
 
-    /* Buttons */
     .btnRow{
       display:flex;
       gap:10px;
@@ -356,7 +392,6 @@
     }
     .btn:disabled{ opacity:.55; cursor:not-allowed; }
 
-    /* Modal instrukcji */
     .modal{
       position:fixed;
       inset:0;
@@ -368,22 +403,16 @@
     }
     .modal.show{ display:flex; }
     .sheet{
-      width:min(560px, 100%);
+      width:100%;
+      max-width:560px;
       background: rgba(255,255,255,.97);
       border:1px solid rgba(2,132,199,.22);
       border-radius:18px;
       box-shadow: 0 18px 40px rgba(2,132,199,.18);
       padding:14px;
     }
-    .sheet h2{
-      margin:0 0 8px 0;
-      font-size:16px;
-    }
-    .sheet p, .sheet li{
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.35;
-    }
+    .sheet h2{ margin:0 0 8px 0; font-size:16px; }
+    .sheet p, .sheet li{ color:var(--muted); font-size:13px; line-height:1.35; }
     .sheet ul{ margin:8px 0 10px 18px; padding:0; }
     .warn{
       margin-top:10px;
@@ -397,9 +426,9 @@
       font-weight:700;
     }
 
-    @media (max-width: 380px){
-      .choices{ grid-template-columns:1fr; }
-      .app{ width:min(520px, 96vw); }
+    /* FIX: на телефоне — одна колонка, чтобы ничего не “вылетало” */
+    @media (max-width: 520px){
+      .choices{ grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -433,7 +462,6 @@
         <div class="slots" id="slots"></div>
 
         <div class="meter">
-          <!-- NOWE: symulacja wody -->
           <div class="waterBox">
             <div class="waterTop">
               <p class="title">2) Symulacja: brudna woda → czystsza</p>
@@ -473,7 +501,6 @@
     </div>
   </div>
 
-  <!-- Modal -->
   <div class="modal" id="modal">
     <div class="sheet">
       <h2>Instrukcja mini-filtra (pokaz)</h2>
@@ -503,10 +530,8 @@
     { id:"charcoal", name:"Węgiel aktywny", ico:"⚫", desc:"zapach/kolor" },
     { id:"cotton", name:"Wata / filtr", ico:"🧻", desc:"zabezpiecza ujście" }
   ];
-
   const target = ["gravel","sand","charcoal"]; // dół->góra
 
-  // DOM
   const choicesEl = document.getElementById("choices");
   const slotsEl = document.getElementById("slots");
   const pickedCountEl = document.getElementById("pickedCount");
@@ -525,16 +550,12 @@
   const beaker = document.getElementById("beaker");
   const mud = document.getElementById("mud");
 
-  // State
   let picked = [];
   let clarity = 0;
-  let lastEval = { sameOrder:false, correctSetCount:0 };
   let hasChecked = false;
 
   function vibrate(pattern){
-    try{
-      if (navigator.vibrate) navigator.vibrate(pattern);
-    } catch(_) {}
+    try{ if (navigator.vibrate) navigator.vibrate(pattern); } catch(_) {}
   }
 
   function renderChoices(){
@@ -543,7 +564,6 @@
       const disabled = picked.includes(l.id) || picked.length>=3;
       const btn = document.createElement("div");
       btn.className = "chip" + (disabled ? " disabled" : "");
-      btn.tabIndex = 0;
       btn.innerHTML = `
         <div class="left">
           <div class="ico">${l.ico}</div>
@@ -608,8 +628,6 @@
     const sameOrder = p.join("|") === target.join("|");
     const correctSetCount = p.filter(x => target.includes(x)).length;
 
-    lastEval = { sameOrder, correctSetCount };
-
     let value = 0;
     if (sameOrder) value = 100;
     else if (correctSetCount === 3) value = 65;
@@ -626,8 +644,7 @@
     if (sameOrder){
       resultTitleEl.textContent = "Świetnie! Filtr działa najlepiej";
       resultNoteEl.textContent = "Kolejność jest poprawna: żwir → piasek → węgiel.";
-      // NOWE: wibracja przy idealnym wyniku
-      vibrate([70, 40, 70]);
+      vibrate([70, 40, 70]); // вибрация за идеальный результат
     } else if (correctSetCount === 3){
       resultTitleEl.textContent = "Dobrze, ale popraw kolejność";
       resultNoteEl.textContent = "Warstwy są właściwe, jednak ich układ ma znaczenie.";
@@ -640,35 +657,23 @@
     }
   }
 
-  // NOWE: симуляция “wlewania” и “klarowania”
   function resetWaterVisual(){
     beaker.classList.remove("pouring");
-    // на старте вода очень мутная
-    mud.style.opacity = "1";
+    mud.style.opacity = "1"; // старт — очень мутно
   }
 
   function pourWater(){
     if (!hasChecked) return;
 
-    // Струя/эффект
     beaker.classList.remove("pouring");
-    // reflow for restarting animation
     void beaker.offsetWidth;
     beaker.classList.add("pouring");
 
-    // Чем выше klarowność — тем меньше мутности
-    // opacity: 1 = очень мутно, 0 = прозрачно
     const targetOpacity = 1 - (clarity / 100);
-
-    // Делаем плавное “прояснение”
-    // Добавим чуть-чуть “реализма”: минимальная мутность не уходит в ноль полностью,
-    // если результат не 100
     const finalOpacity = Math.max(0.02, targetOpacity);
 
-    // немного задержки, чтобы совпало со струёй
     setTimeout(() => {
       mud.style.opacity = String(finalOpacity);
-      // лёгкая тактильная отдача на телефоне при “вливании”
       vibrate(25);
     }, 220);
   }
@@ -676,7 +681,6 @@
   function reset(){
     picked = [];
     setClarity(0);
-    lastEval = { sameOrder:false, correctSetCount:0 };
     hasChecked = false;
     pourBtn.disabled = true;
 
@@ -693,18 +697,14 @@
     checkBtn.disabled = picked.length !== 3;
   }
 
-  // Events
   checkBtn.addEventListener("click", evaluate);
   resetBtn.addEventListener("click", reset);
   pourBtn.addEventListener("click", pourWater);
 
   howBtn.addEventListener("click", () => modal.classList.add("show"));
   closeBtn.addEventListener("click", () => modal.classList.remove("show"));
-  modal.addEventListener("click", (e) => {
-    if (e.target === modal) modal.classList.remove("show");
-  });
+  modal.addEventListener("click", (e) => { if (e.target === modal) modal.classList.remove("show"); });
 
-  // init
   renderAll();
   resetWaterVisual();
   setClarity(0);
@@ -712,3 +712,4 @@
 </script>
 </body>
 </html>
+
